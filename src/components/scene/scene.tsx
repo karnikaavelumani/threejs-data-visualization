@@ -2,8 +2,19 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import ThreeGlobe from "three-globe";
 
-function setup(containerElement: HTMLElement) {
+interface Feature {
+  type: string;
+  properties: Record<string, string | number>;
+  bbox: [number, number, number, number];
+  geometry: {
+    type: string;
+    coordinates: number[][][];
+  };
+}
+
+async function setup(containerElement: HTMLElement) {
   if (containerElement.children.length > 0) {
     return;
   }
@@ -20,18 +31,33 @@ function setup(containerElement: HTMLElement) {
   renderer.setSize(window.innerWidth, window.innerHeight);
   containerElement.appendChild(renderer.domElement);
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
+  // const geometry = new THREE.BoxGeometry(1, 1, 1);
+  // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  // const cube = new THREE.Mesh(geometry, material);
+  // scene.add(cube);
 
+  fetch('/ne_110m_admin_0_countries.geojson')
+  .then(res => res.json())
+  .then((countries) =>
+    {
+      console.log({countries});
+      const Globe = new ThreeGlobe()
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+        .polygonsData(countries.features.filter((f:Feature) => f.properties.ISO_A2 !== 'AQ'))
+        .polygonCapColor(() => 'rgba(200, 0, 0, 0.7)')
+        .polygonSideColor(() => 'rgba(0, 200, 0, 0.1)')
+        .polygonStrokeColor(() => '#111');
+      scene.add(Globe);
+    }
+  )
+  
   camera.position.z = 5;
 
   function animate() {
     requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    // cube.rotation.x += 0.01;
+    // cube.rotation.y += 0.01;
 
     renderer.render(scene, camera);
   }

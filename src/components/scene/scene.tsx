@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import ThreeGlobe from "three-globe";
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 interface Feature {
   type: string;
@@ -30,6 +31,7 @@ async function setup(containerElement: HTMLElement) {
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   containerElement.appendChild(renderer.domElement);
+  const controls = new OrbitControls( camera, renderer.domElement );
 
   // const geometry = new THREE.BoxGeometry(1, 1, 1);
   // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -47,18 +49,20 @@ async function setup(containerElement: HTMLElement) {
         .polygonCapColor(() => 'rgba(200, 0, 0, 0.7)')
         .polygonSideColor(() => 'rgba(0, 200, 0, 0.1)')
         .polygonStrokeColor(() => '#111');
-      scene.add(Globe);
+        setTimeout(() => Globe.polygonAltitude(() => Math.random()), 4000);
+        scene.add(Globe);
     }
   )
   
-  camera.position.z = 5;
+  camera.position.z = 350;
+  controls.update();
 
   function animate() {
     requestAnimationFrame(animate);
 
     // cube.rotation.x += 0.01;
     // cube.rotation.y += 0.01;
-
+    controls.update();
     renderer.render(scene, camera);
   }
 

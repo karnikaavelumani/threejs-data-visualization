@@ -50,10 +50,10 @@ async function setup(containerElement: HTMLElement) {
             f.properties.ISO_A2 !== "AQ"
           ),
         )
-        .polygonCapColor(() => "rgba(200, 0, 0, 0.7)")
-        .polygonSideColor(() => "rgba(0, 200, 0, 0.1)")
-        .polygonStrokeColor(() => "#111");
-      globe.polygonAltitude((f) => {
+        .polygonCapColor(() => "rgba(34,139,34, 0.7)")
+        .polygonSideColor(() => "rgba(92, 64, 51, 0.1)")
+        .polygonStrokeColor(() => "#013220")
+        .polygonAltitude((f) => {
         let data = foodWasteService.getDataByCountry(
           (f as Feature).properties["NAME"] as string,
         );
@@ -61,11 +61,12 @@ async function setup(containerElement: HTMLElement) {
           (f as Feature).properties["NAME_LONG"] as string,
         );
         if (!data) {
-          return 0;
+          return 0.0025; // Small value.
         }
 
         return data.FoodWaste2021kgcapitayear / 100;
-      });
+      })
+      
       scene.add(globe);
     });
 
